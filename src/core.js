@@ -1,4 +1,4 @@
-var c3 = { version: "0.4.11-rc4" };
+var c3 = { version: "0.4.11" };
 
 var c3_chart_fn,
     c3_chart_internal_fn,
@@ -81,7 +81,7 @@ c3_chart_internal_fn.init = function () {
     $$.initParams();
 
     if (config.data_url) {
-        $$.convertUrlToData(config.data_url, config.data_mimeType, config.data_keys, $$.initWithData);
+        $$.convertUrlToData(config.data_url, config.data_mimeType, config.data_headers, config.data_keys, $$.initWithData);
     }
     else if (config.data_json) {
         $$.initWithData($$.convertJsonToData(config.data_json, config.data_keys));
@@ -253,6 +253,10 @@ c3_chart_internal_fn.initWithData = function (data) {
         .on('mouseenter', function () { return config.onmouseover.call($$); })
         .on('mouseleave', function () { return config.onmouseout.call($$); });
 
+    if ($$.config.svg_classname) {
+        $$.svg.attr('class', $$.config.svg_classname);
+    }
+
     // Define defs
     defs = $$.svg.append("defs");
     $$.clipChart = $$.appendClip(defs, $$.clipId);
@@ -416,7 +420,7 @@ c3_chart_internal_fn.updateSizes = function () {
     // for arc
     $$.arcWidth = $$.width - ($$.isLegendRight ? legendWidth + 10 : 0);
     $$.arcHeight = $$.height - ($$.isLegendRight ? 0 : 10);
-    if ($$.hasType('gauge')) {
+    if ($$.hasType('gauge') && !config.gauge_fullCircle) {
         $$.arcHeight += $$.height - $$.getGaugeLabelHeight();
     }
     if ($$.updateRadius) { $$.updateRadius(); }
